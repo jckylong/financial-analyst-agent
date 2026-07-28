@@ -16,7 +16,6 @@ import contextlib
 import os
 from collections.abc import AsyncIterator
 
-import google.auth
 from a2a.server.tasks import InMemoryTaskStore
 from dotenv import load_dotenv
 from fastapi import FastAPI
