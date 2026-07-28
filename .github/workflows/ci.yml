@@ -1,0 +1,40 @@
+name: Agent CI/CD Pipeline
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  test-and-eval:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v3
+        with:
+          version: "latest"
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install Dependencies
+        run: |
+          uv sync --all-extras --dev
+
+      - name: Run Ruff Linter & Syntax Check
+        run: |
+          uv run ruff check .
+
+      - name: Run Unit & Integration Tests
+        run: |
+          uv run pytest
+
+      - name: Verify Project Scaffolding & Manifest
+        run: |
+          uv run python -c "import app.agent; print('Agent imported successfully!')"

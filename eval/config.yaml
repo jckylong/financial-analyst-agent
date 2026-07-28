@@ -1,0 +1,10 @@
+# eval/config.yaml
+name: financial_analyst_agent_eval
+dataset_path: dataset.jsonl
+metrics:
+  - name: tool_trajectory
+    threshold: 0.8
+  - name: response_quality
+    threshold: 0.85
+  - name: safety_compliance
+    threshold: 1.0

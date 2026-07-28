@@ -1,0 +1,4 @@
+{"query": "Fetch the current stock quote for AAPL and give me its P/E ratio.", "expected_tools": ["fetch_realtime_stock_quote"], "expected_keywords": ["AAPL", "current_price", "pe_ratio"]}
+{"query": "What are the latest news headlines for NVDA?", "expected_tools": ["extract_financial_news_signals"], "expected_keywords": ["NVDA", "articles", "publisher"]}
+{"query": "Analyze the financial income statement metrics for MSFT.", "expected_tools": ["fetch_income_statement_metrics"], "expected_keywords": ["MSFT", "total_revenue", "net_income"]}
+{"query": "Set my target portfolio allocation for AAPL to 15% with High conviction.", "expected_tools": ["save_user_portfolio_allocation"], "expected_keywords": ["AAPL", "15", "High", "APPROVED"]}
