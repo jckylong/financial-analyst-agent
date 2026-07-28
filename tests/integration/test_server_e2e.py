@@ -49,6 +49,19 @@ FEEDBACK_URL = BASE_URL + "/feedback"
 HEADERS = {"Content-Type": "application/json"}
 
 
+def has_llm_credentials() -> bool:
+    if os.getenv("GEMINI_API_KEY"):
+        return True
+    try:
+        import google.auth
+
+        google.auth.default()
+        return True
+    except Exception:
+        return False
+
+
+
 def log_output(pipe: Any, log_func: Any) -> None:
     """Log the output from the given pipe."""
     for line in iter(pipe.readline, ""):
@@ -126,6 +139,10 @@ def server_fixture(request: Any) -> Iterator[subprocess.Popen[str]]:
 
 def test_adk_run_sse(server_fixture: subprocess.Popen[str]) -> None:
     """Test the native ADK route (/run_sse) end to end."""
+    if not has_llm_credentials():
+        pytest.skip(
+            "Skipping live LLM streaming test: GEMINI_API_KEY or GCP credentials not available."
+        )
     logger.info("Starting ADK /run_sse test")
     user_id = f"user_{uuid.uuid4()}"
     session_data = {"state": {"preferred_language": "English", "visit_count": 1}}
@@ -170,6 +187,10 @@ def test_adk_run_sse(server_fixture: subprocess.Popen[str]) -> None:
 
 def test_a2a_chat_stream(server_fixture: subprocess.Popen[str]) -> None:
     """Test the A2A route using the JSON-RPC streaming protocol."""
+    if not has_llm_credentials():
+        pytest.skip(
+            "Skipping live LLM streaming test: GEMINI_API_KEY or GCP credentials not available."
+        )
     logger.info("Starting A2A chat stream test")
 
     message = Message(
