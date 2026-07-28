@@ -29,9 +29,11 @@ from app.app_utils.a2a import attach_a2a_routes
 from app.app_utils.typing import Feedback
 
 load_dotenv()
-_, project_id = google.auth.default()
-logging_client = google_cloud_logging.Client()
-logger = logging_client.logger(__name__)
+try:
+    logging_client = google_cloud_logging.Client()
+    logger = logging_client.logger(__name__)
+except Exception:
+    logger = None
 allow_origins = (
     os.getenv("ALLOW_ORIGINS", "").split(",") if os.getenv("ALLOW_ORIGINS") else None
 )
@@ -85,7 +87,12 @@ def collect_feedback(feedback: Feedback) -> dict[str, str]:
     Returns:
         Success message
     """
-    logger.log_struct(feedback.model_dump(), severity="INFO")
+    if logger:
+        logger.log_struct(feedback.model_dump(), severity="INFO")
+    else:
+        import logging
+
+        logging.getLogger(__name__).info("Feedback: %s", feedback.model_dump())
     return {"status": "success"}
 
 
