@@ -63,13 +63,28 @@ async def lifespan(app: FastAPI) -> AsyncIterator[None]:
     yield
 
 
+def _should_enable_otel_to_cloud() -> bool:
+    if os.getenv("INTEGRATION_TEST") == "TRUE":
+        return False
+    otel_env = os.getenv("OTEL_TO_CLOUD")
+    if otel_env is not None:
+        return otel_env.lower() in ("true", "1", "yes")
+    try:
+        import google.auth
+
+        google.auth.default()
+        return True
+    except Exception:
+        return False
+
+
 app: FastAPI = get_fast_api_app(
     agents_dir=AGENT_DIR,
     web=True,
     artifact_service_uri=services.ARTIFACT_SERVICE_URI,
     allow_origins=allow_origins,
     session_service_uri=services.SESSION_SERVICE_URI,
-    otel_to_cloud=True,
+    otel_to_cloud=_should_enable_otel_to_cloud(),
     lifespan=lifespan,
 )
 app.title = "financial-analyst-agent"
